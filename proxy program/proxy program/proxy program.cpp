@@ -1,21 +1,98 @@
-// proxy program.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-#include "pch.h"
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <chrono>
+#include <vector>
+
+using namespace std;
+
+void delay(int NumberOfSeconds) //funkcija reikalinga gaut 1 sek delay
+{
+	int milli_seconds = 1000 * NumberOfSeconds; 
+	clock_t start_time = clock();
+	while (clock() < start_time + milli_seconds) {
+	}
+}
+
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	bool Backwards = false, BackupUsed= false; // Backwards - reverse flag, BackupUsed - Backupo ivygdymo flag
+	string Line, Backup, Special = "ZZ.ZZ.ZZ"; // Line - nuskaityta eilute, Backup - saugoma priees tai nuskaityta eilute, Special - string su pattern
+	ifstream Input("C:/Users/Happy/Documents/GitHub/Homework/file.txt");
+	vector<string> Temp; // nuskaitytu bet nedeliverintu eiluciu vektorius
+
+	while (Input.eof() == false) // Pagrindinis programos ciklas
+	{
+		ofstream Output("F:/Final.txt", ios::app);
+
+		if (Input.is_open() == true) // Tikrina ar prieinamas failas su eilutemis
+		{
+			getline(Input, Line);
+			
+			if (Output.is_open() == true) // Tikrina ar prieinamas failas i kuri irasynesim
+			{
+				if (Temp.size() > 0) // Salyga jei vektorius turi nedeliverintu eiluciu, tai deliverina.
+				{
+					while (Temp.size() > 0)
+					{
+						if (BackupUsed == true)
+						{ // kad imesti po rysio atgavimo prarasta eilute
+		
+							Temp.push_back(Line);
+							BackupUsed = false;
+						}
+
+						Output << Temp.front() << "\n";
+						Temp.erase(Temp.begin(), Temp.begin()+1);
+					}
+				}
+				else if (Line.find(Special) == string::npos) // Jeigu vektorius tuscias kur saugomi nedeliverinti,
+															 // iesko be ZZ.ZZ.ZZ patterno eilutes ir su ja dirba.
+				{
+					if (Backwards == false) // Jei Reverse flag'as 0 tai tiesiog deliverina i Output faila
+					{
+						/*cout << Line << " " << "\n";*/ /// Testavimui
+						Output << Line << "\n";
+					}
+					else if (Backwards == true) // Jei Reverse flag'as 1 tai reversina ir poto deliverina i Output faila
+					{
+						reverse(Line.begin(), Line.end());
+						/*cout << Line << " " << "\n";*/ /// Testavimui
+						Output << Line << "\n";
+						Backwards = false;
+					}
+				}
+				else // Jeigu Vektorius tuscias, o eilute turi pattern ZZ.ZZ.ZZ, reverse flag'as uzsidega, o eilute deliverinama
+				{
+					Backwards = true;
+					/*cout << Line << " " << "\n";*/ /// Testavimui
+					Output << Line << "\n";
+				}
+			}
+			else // Jeigu Output failas yra neaprieinamas tada, jei Vektorius tuscias ideda ten backup'a, o veliau 
+				 // tiesiog saugo nedeliverintas eilutes
+			{
+				if (Temp.size() <= 0) 
+				{ // prarastos eilutes po rysio praradimo atsatymui
+					Temp.push_back(Backup);
+					BackupUsed = true;
+				}
+				Temp.push_back(Line);
+			}
+		}
+		else // jeigu failas su eilutemis uzdarytas ismeta pranesima i konsole
+		{
+			cout << "Input file is closed or error while reading accured";
+			return -1;
+		}
+
+		if (Input.eof() == true) { // Uzdaro failus pasiekus input failo pabaiga
+			Input.close();
+			Output.close();
+		}
+		Backup = Line; // Padaro backup'a eilutes
+		delay(1); 
+	}
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
