@@ -14,20 +14,27 @@ void delay(int NumberOfSeconds) //funkcija reikalinga gaut 1 sek delay
 	}
 }
 
-
 int main()
-{
-	bool Backwards = false, BackupUsed= false; // Backwards - reverse flag, BackupUsed - Backupo ivygdymo flag
-	string Line, Backup, Special = "ZZ.ZZ.ZZ"; // Line - nuskaityta eilute, Backup - saugoma priees tai nuskaityta eilute, Special - string su pattern
-	ifstream Input("C:/Users/Happy/Documents/GitHub/Homework/file.txt");
-	vector<string> Temp; // nuskaitytu bet nedeliverintu eiluciu vektorius
+{	// Backwards - reverse flag, BackupUsed - Backupo ivygdymo flag
+	bool Backwards = false, BackupUsed= false; 
+
+	// Line - nuskaityta eilute, Backup - saugoma priees tai nuskaityta eilute, Special - string su pattern
+	string Line, Backup, Special = "ZZ.ZZ.ZZ";
+
+	// !!!reikiama input failo kelia darasyti pagal poreikius kitaip neveiks
+	ifstream Input(".../remote_server/share/file.txt"); 
+
+	// nuskaitytu bet nedeliverintu eiluciu vektorius
+	vector<string> Temp; 
 
 	while (Input.eof() == false) // Pagrindinis programos ciklas
 	{
-		ofstream Output("F:/Final.txt", ios::app);
-
+		// !!!reikiama output failo kelia darasyti pagal poreikius kitaip neveiks
+		ofstream Output(".../remote_server2/share/file.txt", ios::app); 
+		
 		if (Input.is_open() == true) // Tikrina ar prieinamas failas su eilutemis
 		{
+			
 			getline(Input, Line);
 			
 			if (Output.is_open() == true) // Tikrina ar prieinamas failas i kuri irasynesim
@@ -88,6 +95,7 @@ int main()
 		}
 
 		if (Input.eof() == true) { // Uzdaro failus pasiekus input failo pabaiga
+
 			Input.close();
 			Output.close();
 		}
